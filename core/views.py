@@ -6,6 +6,8 @@ from .models import Profile ,Post,LikePost,FollowersCount
 from django.contrib.auth.decorators import login_required #only login and use the acc
 from itertools import chain #to combine the list used for the feed
 import random
+import logging
+logger = logging.getLogger(__name__)
 # Create your views here.
 
 
@@ -72,31 +74,42 @@ def signup(request):
         if password == password2:
             if User.objects.filter(email=email).exists():
                 messages.error(request, 'Email already exists')
+                logger.warning(f"Signup attempt failed: Email {email} already exists.")
                 return redirect('signup')
             elif User.objects.filter(username=username).exists():
                 messages.error(request, 'Username already exists')
+                logger.warning(f"Signup attempt failed: Username {username} already exists.")
                 return redirect('signup')
             else:
                 user=User.objects.create_user(username=username, email=email, password=password)
                 user.save()
                 
                 
-            #create user and open ins setting page 
-                user_login=auth.authenticate(username=username, password=password)
-                auth.login(request, user_login)
-            
-            #creating user for new user from the profile model  
-            # to save the new user in the profile data base
-            
-                user_model=User.objects.get(username=username)
-                new_profile=Profile.objects.create(user=user_model,id_user=user_model.id)
-                new_profile.save()
-                messages.success(request, 'Account created successfully')
-                return redirect('signup')
+                # Attempt to authenticate the new user
+                user_login = auth.authenticate(username=username, password=password)
+
+                if user_login is not None:
+                    auth.login(request, user_login)
+
+                    #creating user for new user from the profile model
+                    # to save the new user in the profile data base
+                    user_model = User.objects.get(username=username) # Or directly use the 'user' object from create_user
+                    new_profile = Profile.objects.create(user=user_model, id_user=user_model.id)
+                    new_profile.save()
+                    logger.info(f"Account created successfully for username: {username}")
+
+                    messages.success(request, 'Account created successfully and logged in!')
+                    return redirect('index') # Redirect to index page
+                else:
+                    # This case should ideally not happen if create_user was successful
+                    messages.error(request, 'Account created, but auto-login failed. Please try signing in.')
+                    logger.error(f"Account created for {username}, but auto-login failed.")
+                    return redirect('signin') # Redirect to signin page
             
 
         else:
             messages.error(request, 'Passwords do not match')
+            logger.warning("Signup attempt failed: Passwords do not match.")
             return redirect('signup')   
     else:
         return render(request, 'signup.html')
@@ -110,10 +123,12 @@ def signin(request):
         
         if user is not None:
             auth.login(request, user)
+            logger.info(f"User {username} logged in successfully.")
             messages.success(request, 'Login Successful')               
             return redirect('index')
         else:
             messages.error(request, 'Invalid Credentials')
+            logger.warning(f"Login attempt failed for username: {username}. Invalid credentials.")
             return redirect('signin')
     else:
         return render(request, 'signin.html')

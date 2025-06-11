@@ -51,7 +51,10 @@
             {% if user_object.username == user.username %}
             <a href="{% url 'settings' %}" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded">Settings</a>
             {% else %}
-            <form action="/follow" method="POST"><button type="submit" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded">{{ button_text }}</button></form>
+            <form action="/follow" method="POST">{% csrf_token %}
+<input type="hidden" name="follower" value="{{ request.user.username }}">
+<input type="hidden" name="name" value="{{ user_object.username }}">
+<button type="submit" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded">{{ button_text }}</button></form>
             {% endif %}
         </div>
         <div class="mt-4 flex justify-center sm:justify-start space-x-8">

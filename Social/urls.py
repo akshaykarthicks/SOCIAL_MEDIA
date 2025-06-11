@@ -18,11 +18,24 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings #to access settings.py
 from django.conf.urls.static import static  #to serve media files during development
+from django.views.static import serve
+from django.urls import re_path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('core.urls')),
-] 
+]
+
+# Serve media files in development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+else:
+    # In production, serve media files through WhiteNoise
+    urlpatterns += [
+        re_path(r'^media/(?P<path>.*)$', serve, {
+            'document_root': settings.MEDIA_ROOT,
+        }),
+    ] 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) #to serve media files during development
 
 

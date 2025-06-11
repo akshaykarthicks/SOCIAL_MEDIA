@@ -6,7 +6,13 @@ services:
       pip install -r requirements.txt
       python manage.py makemigrations
       python manage.py migrate
-      python manage.py collectstatic --noinput
+      # Create media directory and set permissions
+      mkdir -p media
+      chmod -R 755 media
+      # Collect static files including media
+      python manage.py collectstatic --noinput --clear
+      # Ensure media directory has correct permissions
+      chmod -R 755 media
     startCommand: gunicorn Social.wsgi:application --log-file -
     envVars:
       - key: PYTHON_VERSION

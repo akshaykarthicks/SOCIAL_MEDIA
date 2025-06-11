@@ -25,7 +25,7 @@ import os
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = True  # Temporarily enabling debug for troubleshooting
 
 # Security settings for production
 if not DEBUG:
@@ -39,7 +39,7 @@ if not DEBUG:
     X_FRAME_OPTIONS = 'DENY'
 
 # Security settings
-ALLOWED_HOSTS = ['our-social.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['*']  # Temporarily allowing all hosts for debugging
 
 # CSRF and Session settings
 CSRF_TRUSTED_ORIGINS = ['https://our-social.onrender.com']

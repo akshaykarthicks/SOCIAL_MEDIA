@@ -59,7 +59,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'core',
     'whitenoise.runserver_nostatic',
-    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -97,16 +96,11 @@ WSGI_APPLICATION = 'Social.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
-import dj_database_url
-
 DATABASES = {
-    'default': dj_database_url.config(
-        default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'),
-        conn_max_age=600
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
 }
 
 

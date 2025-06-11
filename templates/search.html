@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Search Results</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="{% static 'favicon.png' %}" rel="icon" type="image/png">
+  <link rel="stylesheet" href="{% static 'assets/css/tailwind.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    /* Enhanced card hover effects */
+    .card {
+      transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Mobile responsive improvements */
+    @media (max-width: 640px) {
+      .mobile-text {
+        font-size: 1.5rem;
+      }
+      
+      .mobile-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    @media (min-width: 641px) and (max-width: 1024px) {
+      .tablet-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    /* Button animations */
+    .btn-hover {
+      transition: all 0.3s ease;
+    }
+    
+    .btn-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-white min-h-screen flex flex-col">
+  <!-- Header -->
+  <header class="bg-white dark:bg-gray-800 shadow sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+        <a href="/" class="text-2xl font-bold text-blue-600 order-1 sm:order-none">AKshay'social</a>
+        
+        <form action="/search" method="POST" class="flex w-full sm:w-auto max-w-md order-3 sm:order-none">
+          {% csrf_token %}
+          <input name="username" placeholder="Search username..." 
+                 class="flex-1 px-4 py-2 rounded-l-lg border border-gray-300 focus:ring focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+          <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700 btn-hover">
+            <i class="fas fa-search"></i>
+          </button>
+        </form>
+        
+        <div class="flex items-center space-x-4 order-2 sm:order-none">
+          <a href="#" class="bg-pink-600 text-white px-4 py-2 rounded-lg shadow hover:bg-pink-700 btn-hover text-sm flex items-center">
+            <i class="fas fa-upload mr-2"></i> Upload
+          </a>
+          <div class="hidden sm:flex items-center space-x-3">
+            <span class="text-sm">Welcome, <strong>{{ user.username }}</strong></span>
+            <img src="{{ user_profile.profileimg.url }}" 
+                 class="w-10 h-10 rounded-full border-2 border-blue-500 object-cover shadow-md" alt="Profile">
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+    <h2 class="text-2xl sm:text-3xl font-semibold mb-6 text-center sm:text-left mobile-text">
+      Search Results for <span class="text-blue-600">@{{ username }}</span>
+    </h2>
+    
+    {% if username_profile_list %}
+    <div class="grid mobile-grid tablet-grid lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+      {% for users in username_profile_list %}
+      <div class="card bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm">
+        <a href="/profile/{{ users.user }}">
+          <img src="{{ users.profileimg.url }}" class="w-full h-48 object-cover" alt="Profile Image">
+        </a>
+        <div class="p-4">
+          <h3 class="text-lg sm:text-xl font-semibold mb-1">@{{ users.user }}</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">{{ users.location|default:"No location" }}</p>
+          <p class="text-sm text-gray-600 dark:text-gray-300">{{ users.bio|default:"No bio available." }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-12">
+      <i class="fas fa-search text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
+      <p class="text-lg text-gray-600 dark:text-gray-300">No results found for that username.</p>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Try searching for a different username.</p>
+    </div>
+    {% endif %}
+  </main>
+
+ 
+
+  <script src="{% static 'assets/js/jquery-3.3.1.min.js' %}"></script>
+  <script src="{% static 'assets/js/uikit.js' %}"></script>
+  <script src="{% static 'assets/js/custom.js' %}"></script>
+</body>
+</html>

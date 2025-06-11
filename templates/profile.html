@@ -1,0 +1,105 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <title>Profile - {{user_profile.user.username}}</title>
+    <link rel="stylesheet" href="{% static 'css/main.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/color.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css" />
+    <link href="https://unpkg.com/tailwindcss@^2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 flex flex-col min-h-screen">
+    <!-- Navbar -->
+    <nav class="bg-white dark:bg-gray-800 shadow sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <!-- <a href="/" class="text-2xl font-bold text-pink-600">Akshay's Social</a> -->
+            <form action="/search" method="POST" class="flex-1 mx-6 relative">
+                {% csrf_token %}
+                <input name="username" type="text" placeholder="Search users..." class="w-full py-2 pl-4 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500">
+                <button type="submit" class="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500"><i class="fa fa-search"></i></button>
+            </form>
+            <div class="flex items-center space-x-4">
+                <a href="/" class="text-gray-600 hover:text-gray-800"><i class="fa fa-home text-xl"></i></a>
+               
+            </div>
+        </div>
+    </nav>
+    <!-- Profile Header -->
+    <header class="container max-w-4xl mx-auto mt-6 px-4">
+        <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-visible h-64">
+            <img src="{% static 'images/resources/timeline-1.jpg' %}" alt="Cover" class="w-full h-full object-cover">
+            <div class="absolute -bottom-16 sm:left-6 left-1/2 transform sm:transform-none -translate-x-1/2">
+                <div class="w-32 h-32 rounded-full border-4 border-white dark:border-gray-900 overflow-hidden shadow">
+                    <img src="{{ user_profile.profileimg.url }}" alt="" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </div>
+        <div class="mt-16 flex flex-col sm:flex-row sm:items-center sm:justify-between text-center sm:text-left space-y-4 sm:space-y-0">
+            <div>
+                <h1 class="text-2xl font-bold">@{{ user_profile.user.username }}</h1>
+                <p class="text-gray-500">{{ user_profile.bio }}</p>
+            </div>
+            {% if user_object.username == user.username %}
+            <a href="{% url 'settings' %}" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded">Settings</a>
+            {% else %}
+            <form action="/follow" method="POST"><button type="submit" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded">{{ button_text }}</button></form>
+            {% endif %}
+        </div>
+        <div class="mt-4 flex justify-center sm:justify-start space-x-8">
+            <div class="text-center">
+                <span class="block text-xl font-semibold">{{ user_post_length }}</span>
+                <span class="text-gray-500">Posts</span>
+            </div>
+            <div class="text-center">
+                <span class="block text-xl font-semibold">{{ user_follower }}</span>
+                <span class="text-gray-500">Followers</span>
+            </div>
+            <div class="text-center">
+                <span class="block text-xl font-semibold">{{ user_following }}</span>
+                <span class="text-gray-500">Following</span>
+            </div>
+        </div>
+    </header>
+    <!-- Gallery -->
+    <main class="container mx-auto flex-1 px-4 py-8">
+        <h2 class="text-xl font-semibold mb-4">Photos</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {% for post in user_posts %}
+            <a href="{{ post.image.url }}" data-fancybox="gallery" class="block rounded-lg overflow-hidden shadow hover:shadow-lg transition">
+                <img src="{{ post.image.url }}" alt="" class="w-full h-48 object-cover">
+            </a>
+            {% endfor %}
+        </div>
+    </main>
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-gray-800 shadow py-4">
+        <div class="container mx-auto text-center text-gray-500"> 2025 akshaykarthicS</div>
+    </footer>
+    <script data-cfasync="false" src="{% static '../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js' %}"></script>
+    <script src="{% static 'js/main.min.js' %}"></script>
+    <script src="{% static 'js/script.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+    <script>
+        Fancybox.bind("[data-fancybox]", {
+            // Custom options
+            loop: true,
+            buttons: [
+                "zoom",
+                "slideShow",
+                "fullScreen",
+                "close"
+            ],
+        });
+    </script>
+</body>
+
+</html>
